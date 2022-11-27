@@ -36,4 +36,12 @@ public final class ParseFile {
         }
         return output.toString();
     }
+
+    public String getContentWithUnicode() {
+        return getContent(x -> true);
+    }
+
+    public String getContentWithoutUnicode() {
+        return getContent(x -> x < 0x80);
+    }
 }
