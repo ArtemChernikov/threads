@@ -26,11 +26,25 @@ class AccountStorageTest {
     }
 
     @Test
+    void whenUpdateNotExistAccount() {
+        var storage = new AccountStorage();
+        storage.add(new Account(1, 100));
+        assertThat(storage.update(new Account(2, 200))).isFalse();
+    }
+
+    @Test
     void whenDelete() {
         var storage = new AccountStorage();
         storage.add(new Account(1, 100));
         storage.delete(1);
         assertThat(storage.getById(1)).isEmpty();
+    }
+
+    @Test
+    void whenDeleteNotExistAccount() {
+        var storage = new AccountStorage();
+        storage.add(new Account(1, 100));
+        assertThat(storage.delete(2)).isFalse();
     }
 
     @Test

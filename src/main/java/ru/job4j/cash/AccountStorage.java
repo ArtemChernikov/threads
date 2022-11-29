@@ -29,11 +29,7 @@ public class AccountStorage {
      * @return - возвращает true, если добавление успешно и false, если иначе
      */
     public synchronized boolean add(Account account) {
-        if (accounts.containsValue(account)) {
-            return false;
-        }
-        accounts.put(account.id(), account);
-        return true;
+        return Optional.ofNullable(accounts.putIfAbsent(account.id(), account)).isPresent();
     }
 
     /**
@@ -44,7 +40,7 @@ public class AccountStorage {
      */
     public synchronized boolean update(Account account) {
         int id = account.id();
-        return accounts.replace(id, getById(id).get(), account);
+        return getById(id).filter(value -> accounts.replace(id, value, account)).isPresent();
     }
 
     /**
@@ -54,7 +50,7 @@ public class AccountStorage {
      * @return - возвращает true, если удаление успешно и false, если иначе
      */
     public synchronized boolean delete(int id) {
-        return accounts.remove(id, getById(id).get());
+        return getById(id).filter(value -> accounts.remove(id, value)).isPresent();
     }
 
     /**
@@ -76,13 +72,18 @@ public class AccountStorage {
      * @return - возвращает true, если перевод выполнен успешно и false, если иначе
      */
     public synchronized boolean transfer(int fromId, int toId, int amount) {
-        Account account1 = accounts.get(fromId);
-        if (account1.amount() < amount) {
-            return false;
+        Optional<Account> fromAccount = getById(fromId);
+        Optional<Account> toAccount = getById(toId);
+        if (fromAccount.isPresent() && toAccount.isPresent()) {
+            Account account1 = fromAccount.get();
+            if (account1.amount() < amount) {
+                return false;
+            }
+            Account account2 = toAccount.get();
+            update(new Account(fromId, account1.amount() - amount));
+            update(new Account(toId, account2.amount() + amount));
+            return true;
         }
-        Account account2 = accounts.get(toId);
-        update(new Account(fromId, account1.amount() - amount));
-        update(new Account(toId, account2.amount() + amount));
-        return true;
+        return false;
     }
 }
