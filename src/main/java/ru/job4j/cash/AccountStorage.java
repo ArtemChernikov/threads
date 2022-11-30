@@ -29,7 +29,7 @@ public class AccountStorage {
      * @return - возвращает true, если добавление успешно и false, если иначе
      */
     public synchronized boolean add(Account account) {
-        return Optional.ofNullable(accounts.putIfAbsent(account.id(), account)).isPresent();
+        return accounts.putIfAbsent(account.id(), account) == null;
     }
 
     /**
@@ -40,7 +40,7 @@ public class AccountStorage {
      */
     public synchronized boolean update(Account account) {
         int id = account.id();
-        return getById(id).filter(value -> accounts.replace(id, value, account)).isPresent();
+        return accounts.replace(id, account) != null;
     }
 
     /**
@@ -50,7 +50,7 @@ public class AccountStorage {
      * @return - возвращает true, если удаление успешно и false, если иначе
      */
     public synchronized boolean delete(int id) {
-        return getById(id).filter(value -> accounts.remove(id, value)).isPresent();
+        return accounts.remove(id) != null;
     }
 
     /**
@@ -74,11 +74,8 @@ public class AccountStorage {
     public synchronized boolean transfer(int fromId, int toId, int amount) {
         Optional<Account> fromAccount = getById(fromId);
         Optional<Account> toAccount = getById(toId);
-        if (fromAccount.isPresent() && toAccount.isPresent()) {
+        if (fromAccount.isPresent() && toAccount.isPresent() && fromAccount.get().amount() >= amount) {
             Account account1 = fromAccount.get();
-            if (account1.amount() < amount) {
-                return false;
-            }
             Account account2 = toAccount.get();
             update(new Account(fromId, account1.amount() - amount));
             update(new Account(toId, account2.amount() + amount));
