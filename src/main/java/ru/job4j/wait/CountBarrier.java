@@ -4,7 +4,7 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Класс, который блокирует выполнение по условию счетчика
+ * Класс, который демонстрирует блокировку выполнения по условию счетчика
  *
  * @author Artem Chernikov
  * @version 1.0
