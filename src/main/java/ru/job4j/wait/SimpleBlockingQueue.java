@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
+ * Класс описывает реализацию шаблона Producer Consumer с помощью собственной версии
+ * bounded blocking queue (блокирующая очередь, ограниченная по размеру),
+ * в данном шаблоне Producer помещает данные в очередь, а Consumer извлекает данные из очереди
+ *
  * @author Artem Chernikov
  * @version 1.0
  * @since 01.12.2022
@@ -21,27 +25,20 @@ public class SimpleBlockingQueue<T> {
         this.limit = limit;
     }
 
-    public synchronized void offer(T value) {
+    public synchronized void offer(T value) throws InterruptedException {
         while (queue.size() == limit) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            wait();
         }
-        notifyAll();
         queue.add(value);
+        notifyAll();
     }
 
-    public synchronized T poll() {
+    public synchronized T poll() throws InterruptedException {
         while (queue.size() == 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            wait();
         }
+        T rsl = queue.poll();
         notifyAll();
-        return queue.poll();
+        return rsl;
     }
 }

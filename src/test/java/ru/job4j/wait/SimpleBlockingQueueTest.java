@@ -11,7 +11,11 @@ class SimpleBlockingQueueTest {
                 () -> {
                     for (int i = 0; i <= 10; i++) {
                         System.out.println("add " + i);
-                        simpleBlockingQueue.offer(i);
+                        try {
+                            simpleBlockingQueue.offer(i);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 }
         );
@@ -19,7 +23,11 @@ class SimpleBlockingQueueTest {
         Thread consumer = new Thread(
                 () -> {
                     for (int i = 0; i <= 10; i++) {
-                        System.out.println("poll: " + simpleBlockingQueue.poll());
+                        try {
+                            System.out.println("poll: " + simpleBlockingQueue.poll());
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 }
         );
