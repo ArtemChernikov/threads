@@ -43,8 +43,7 @@ public class Cache {
                     }
                     Base newVersion = new Base(model.getId(), value.getVersion() + 1);
                     newVersion.setName(model.getName());
-                    value = newVersion;
-                    return value;
+                    return newVersion;
                 }
         ) != null;
     }
