@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Класс демонстрирует модель пула потоков, котрые можно переиспользовать
- * для выполнения различных задач
+ * Класс демонстрирует модель пула потоков, котрые можно
+ * переиспользовать для выполнения различных задач
  * Используется класс {@link SimpleBlockingQueue}
  *
  * @author Artem Chernikov
@@ -15,29 +15,58 @@ import java.util.List;
  * @since 08.12.2022
  */
 public class ThreadPool {
+    /**
+     * Поле число ядер устройства
+     */
+    private final int cores = Runtime.getRuntime().availableProcessors();
+    /**
+     * Поле список потоков
+     */
     private final List<Thread> threads = new LinkedList<>();
-    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(10);
-    private final int threadsSize = Runtime.getRuntime().availableProcessors();
+    /**
+     * Поле блокирующая очередь с задачами для потоков
+     */
+    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(cores);
 
+    /**
+     * Конструктор, при создании объекта {@link ThreadPool} создается
+     * определенное количество потоков, равное числу ядер устройства {@link ThreadPool#cores},
+     * где у каждого потока в методе {@link Thread#run()} определено действие:
+     * "Вытащить задачу для выполнения из блокирующей очереди и запусить ее",
+     * далее мы:
+     * 1) Запускаем поток к исполнению
+     * 3) Добавляем поток в список потоков {@link ThreadPool#threads}
+     */
     public ThreadPool() {
-        for (int i = 0; i < threadsSize; i++) {
-            threads.add(new Thread(
+        for (int i = 0; i < cores; i++) {
+            Thread thread = new Thread(
                     () -> {
                         try {
-                                tasks.poll().run();
+                            tasks.poll().run();
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
                     }
-            ));
+            );
+            thread.start();
+            threads.add(thread);
         }
-        threads.forEach(Thread::start);
     }
 
+    /**
+     * Метод используется для добавления задач для потоков в блокирующую очередь
+     *
+     * @param job - задача
+     * @throws InterruptedException - может выбросить {@link InterruptedException}
+     */
     public synchronized void work(Runnable job) throws InterruptedException {
         tasks.offer(job);
     }
 
+    /**
+     * Метод используется для завершения всех выполняемых задач потоками,
+     * вне зависимости от того, успели они их выполнить или нет
+     */
     public void shutdown() {
         threads.forEach(Thread::interrupt);
     }
