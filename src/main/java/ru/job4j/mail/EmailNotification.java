@@ -4,6 +4,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * Класс описывает сервис для рассылки почты с помощью пула нитей {@link ExecutorService}
+ *
  * @author Artem Chernikov
  * @version 1.0
  * @since 10.12.2022
