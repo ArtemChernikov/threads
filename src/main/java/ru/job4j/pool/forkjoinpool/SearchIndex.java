@@ -4,15 +4,15 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
 /**
- * Класс описывает модель для параллельного поиска элемента в массиве
+ * Класс описывает модель для параллельного поиска индекса элемента в массиве
  * с помощью {@link ForkJoinPool} и рекурсии, если элементов много (больше 10)
  * и линейного поиска (если элементов меньше 10)
  *
  * @author Artem Chernikov
- * @version 1.0
- * @since 12.12.2022
+ * @version 1.1
+ * @since 15.12.2022
  */
-public class SearchIndex<T> extends RecursiveTask<T> {
+public class SearchIndex<T> extends RecursiveTask<Integer> {
     /**
      * Поле массив
      */
@@ -45,50 +45,45 @@ public class SearchIndex<T> extends RecursiveTask<T> {
     /**
      * Метод используется для запуска поиска элемента в массиве
      *
-     * @return - возвращает искомый элемент, в случае отсутствия такового null
+     * @return - возвращает индекс искомого элемента, в случае отсутствия такового -1
      */
-    public T search() {
+    public static <T> Integer search(T[] array, T object) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        return forkJoinPool.invoke(new SearchIndex<T>(array, from, to, searchObject));
+        return forkJoinPool.invoke(new SearchIndex<>(array, 0, array.length, object));
     }
 
     /**
      * Метод используется для линейного поиска элемента в массиве
      *
-     * @param indexFrom - индекс начала
-     * @param indexTo   - индекс конца
-     * @param array     - массив
-     * @param object    - искомый объект
-     * @return - возвращает искомый элемент, в случае отсутствия такового null
+     * @return - возвращает индекс искомого элемента, в случае отсутствия такового -1
      */
-    private T lineSearch(int indexFrom, int indexTo, T[] array, T object) {
-        for (int i = indexFrom; i < indexTo; i++) {
-            if (array[i].equals(object)) {
-                return array[i];
+    private Integer lineSearch() {
+        for (int i = from; i < to; i++) {
+            if (array[i].equals(searchObject)) {
+                return i;
             }
         }
-        return null;
+        return -1;
     }
 
     /**
-     * Метод используется для деления массива на две части, если он больше {@link SearchIndex#ELEMENTS}
-     * и дальнейшего поиска искомого элемента в массиве
+     * Метод используется для деления массива на две части, если он больше
+     * {@link SearchIndex#ELEMENTS} и дальнейшего поиска искомого элемента в двух новых массивах
      *
-     * @return - возвращает искомый элемент, в случае отсутствия такового null
+     * @return - возвращает индекс искомого элемента, в случае отсутствия такового -1
      */
     @Override
-    protected T compute() {
+    protected Integer compute() {
         if (to - from <= ELEMENTS) {
-            T rsl = lineSearch(from, to, array, searchObject);
-            return searchObject.equals(rsl) ? rsl : null;
+            return lineSearch();
         }
         int mid = (to - from) / 2;
         SearchIndex<T> first = new SearchIndex<>(array, from, to - mid, searchObject);
         SearchIndex<T> second = new SearchIndex<>(array, to - mid + 1, to, searchObject);
         first.fork();
         second.fork();
-        T firstResult = first.join();
-        T secondResult = second.join();
-        return firstResult == null ? secondResult : firstResult;
+        Integer firstResult = first.join();
+        Integer secondResult = second.join();
+        return firstResult.equals(-1) ? secondResult : firstResult;
     }
 }

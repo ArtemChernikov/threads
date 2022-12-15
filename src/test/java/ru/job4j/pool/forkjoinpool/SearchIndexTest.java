@@ -3,41 +3,37 @@ package ru.job4j.pool.forkjoinpool;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.job4j.pool.forkjoinpool.SearchIndex.search;
 
 class SearchIndexTest {
 
     @Test
     void whenLineSearch() {
         Integer[] array = {1, 10, 15, 2, 2, 3, 4};
-        SearchIndex<Integer> searchIndex = new SearchIndex<>(array, 0, array.length, 15);
-        assertThat(searchIndex.search()).isEqualTo(15);
+        assertThat(search(array, 15)).isEqualTo(2);
     }
 
     @Test
     void whenRecursiveSearchInteger() {
         Integer[] array = {1, 10, 15, 2, 2, 3, 4, 10, 20, 33, 44, 55, 25};
-        SearchIndex<Integer> searchIndex = new SearchIndex<>(array, 0, array.length, 15);
-        assertThat(searchIndex.search()).isEqualTo(15);
+        assertThat(search(array, 20)).isEqualTo(8);
     }
 
     @Test
     void whenRecursiveSearchString() {
         String[] array = {"1", "10", "15", "2", "2", "3", "4", "10", "20", "33", "44", "55", "25"};
-        SearchIndex<String> searchIndex = new SearchIndex<>(array, 0, array.length, "15");
-        assertThat(searchIndex.search()).isEqualTo("15");
+        assertThat(search(array, "15")).isEqualTo(2);
     }
 
     @Test
     void whenLineSearchNotFoundElement() {
         Integer[] array = {1, 10, 15, 2, 2, 3, 4};
-        SearchIndex<Integer> searchIndex = new SearchIndex<>(array, 0, array.length, 100);
-        assertThat(searchIndex.search()).isNull();
+        assertThat(search(array, 100)).isEqualTo(-1);
     }
 
     @Test
     void whenRecursiveSearchIntegerNotFoundElement() {
         Integer[] array = {1, 10, 15, 2, 2, 3, 4, 10, 20, 33, 44, 55, 25};
-        SearchIndex<Integer> searchIndex = new SearchIndex<>(array, 0, array.length, 100);
-        assertThat(searchIndex.search()).isNull();
+        assertThat(search(array, 100)).isEqualTo(-1);
     }
 }
