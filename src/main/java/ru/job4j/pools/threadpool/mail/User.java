@@ -1,4 +1,4 @@
-package ru.job4j.pool.threadpool.mail;
+package ru.job4j.pools.threadpool.mail;
 
 import java.util.Objects;
 

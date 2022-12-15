@@ -1,9 +1,9 @@
-package ru.job4j.pool.forkjoinpool;
+package ru.job4j.pools.forkjoinpool;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.job4j.pool.forkjoinpool.SearchIndex.search;
+import static ru.job4j.pools.forkjoinpool.SearchIndex.search;
 
 class SearchIndexTest {
 
