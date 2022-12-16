@@ -9,7 +9,7 @@ class SearchIndexTest {
 
     @Test
     void whenLineSearch() {
-        Integer[] array = {1, 10, 15, 2, 2, 3, 4};
+        Integer[] array = {1, 10, 15, 2, 2, 3, 3};
         assertThat(search(array, 15)).isEqualTo(2);
     }
 
