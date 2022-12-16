@@ -84,6 +84,6 @@ public class SearchIndex<T> extends RecursiveTask<Integer> {
         second.fork();
         Integer firstResult = first.join();
         Integer secondResult = second.join();
-        return firstResult.equals(-1) ? secondResult : firstResult;
+        return Math.max(firstResult, secondResult);
     }
 }
