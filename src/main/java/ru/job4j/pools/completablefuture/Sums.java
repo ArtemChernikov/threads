@@ -3,6 +3,8 @@ package ru.job4j.pools.completablefuture;
 import java.util.Objects;
 
 /**
+ * Класс описывает модель сумм колонн и строк в матрице
+ *
  * @author Artem Chernikov
  * @version 1.0
  * @since 15.12.2022
