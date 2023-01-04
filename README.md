@@ -43,3 +43,6 @@
 - ForkJoinPool
 - CompletableFuture
 - Callable, Future, FutureTask
+
+# Git
+- Работа с ветками Git
