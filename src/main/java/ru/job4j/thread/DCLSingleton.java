@@ -8,7 +8,7 @@ package ru.job4j.thread;
  * @since 16.11.2022
  */
 public class DCLSingleton {
-    private volatile static DCLSingleton inst;
+    private static volatile DCLSingleton inst;
 
     public static DCLSingleton instOf() {
         if (inst == null) {
